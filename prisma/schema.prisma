@@ -8,13 +8,13 @@ datasource db {
 
 // 1つのPostに対して投稿者は1人だけ
 model Post {
-  id        Int @id @default(autoincrement())
-  content   String
-  createdAt      DateTime @default(now())
-  ImageKey  String?
+  id          Int @id @default(autoincrement())
+  content     String
+  createdAt   DateTime @default(now())
+  ImageKey    String?
 
-  userId    Int?
-  user      User? @relation(fields: [userId], references: [id])
+  userId      Int?
+  user        User? @relation(fields: [userId], references: [id])
 }
 
 model User {
