@@ -1,0 +1,96 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// 1つのPostに対して投稿者は1人だけ
+model Post {
+  id        Int @id @default(autoincrement())
+  content   String
+  createdAt      DateTime @default(now())
+  ImageKey  String?
+
+  userId    Int?
+  user      User? @relation(fields: [userId], references: [id])
+}
+
+model User {
+  id            Int @id @default(autoincrement())
+  AccountName   String? @unique
+  name          String?
+
+  posts         Post[]
+}
+
+
+
+
+// 別のプロジェクトのテーブル
+// Artist ↔ Event（多対多）
+model Event {
+  id              Int     @id @default(autoincrement())
+  eventTitle      String?
+  eventDate       DateTime
+  startTime       String?
+  ticketImageKey  String?
+  note            String?
+  songList        String?
+  rating          Int?   // レビュー
+
+  // 画像が0件でも空配列になるからオプショナルにしなくてもいい
+  // memoryImage   String[]
+
+  placeId         Int
+  place           Place     @relation(fields: [placeId], references: [id])
+
+  eventImages     EventImage[]
+  artist          Artist[]
+}
+
+model Artist {
+  id              Int     @id @default(autoincrement())
+  name            String  @unique    // 同一アーティストを重複させない
+  imageUrl        String?
+  events          Event[]
+}
+
+model Place {
+  id              Int           @id @default(autoincrement())
+  name            String
+  events          Event[]
+}
+
+model EventImage {
+  id              Int     @id @default(autoincrement())
+  url             String      // 存在するならurlは必ず持つ必要があるので?にしない
+  comment         String?
+
+  eventId         Int
+  event           Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
+
+model Pokemon {
+  id      Int           @id @default(autoincrement())
+  name    String
+  weight  Int
+  detail  String @default("")
+  types   PokemonType[]
+}
+
+model Type {
+  id        Int           @id @default(autoincrement())
+  name      String
+  pokemons  PokemonType[]
+}
+
+model PokemonType {
+  id          Int     @id @default(autoincrement())
+  pokemonId   Int
+  typeId      Int     @map("type_id")
+  pokemon     Pokemon @relation(fields: [pokemonId], references: [id], onDelete: Cascade)
+  type        Type    @relation(fields: [typeId], references: [id], onDelete: Cascade)
+}
+
