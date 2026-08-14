@@ -9,6 +9,7 @@ type CreatepostProps = {
   content: string
   setContent: Dispatch<SetStateAction<string>>   
   onCreateSubmit: (data: PostFormData) => Promise<void>
+  onEditSubmit: (data: PostFormData) => Promise<void>
   disabled?: boolean 
 }
 
@@ -16,6 +17,7 @@ export default function PostForm({
   content,
   setContent,
   onCreateSubmit,
+  onEditSubmit,
   disabled
 }:CreatepostProps) {
 
