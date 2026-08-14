@@ -5,7 +5,7 @@ export type PostFormData = {
   ImageKey?: string 
 }
 
-type CreatepostProps = {
+type PostFormProps = {
   content: string
   setContent: Dispatch<SetStateAction<string>>   
   onCreateSubmit: (data: PostFormData) => Promise<void>
@@ -19,7 +19,7 @@ export default function PostForm({
   onCreateSubmit,
   onEditSubmit,
   disabled
-}:CreatepostProps) {
+}:PostFormProps) {
 
   const handleSubmit = async (
     e: React.FormEvent<HTMLFormElement>

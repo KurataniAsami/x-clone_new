@@ -33,3 +33,35 @@ export const GET = async (
         return NextResponse.json({ message: error.message }, { status: 400 })
     }
   }
+
+  // PUT
+  export type UpdatePostRequestBody = {
+    content: string
+    ImageKey?: string
+  }
+
+  export const PUT = async (
+    request: NextRequest,
+    { params }: { params: Promise<{ id: string }>},
+  ) => {
+    const { id } = await params
+
+    const { content, ImageKey }: UpdatePostRequestBody = await request.json()
+
+    try {
+      const post = await prisma.post.update({
+        where: {
+          id: parseInt(id),
+        },
+        data: {
+          content,
+          ImageKey
+        }
+      })
+
+      return NextResponse.json({ message: '変更しました'}, { status: 200})
+    } catch(error) {
+      if(error instanceof Error)
+        return NextResponse.json({ message: error.message }, { status: 400 })
+    }
+  }

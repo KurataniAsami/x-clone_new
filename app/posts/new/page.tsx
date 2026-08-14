@@ -44,6 +44,7 @@ export default function CreatePostPage() {
     <div>
       <PostForm
         onCreateSubmit={handleCreateSubmit}
+        onEditSubmit={handleCreateSubmit}
         content={content}
         setContent={setContent}
         disabled={loading}
@@ -52,7 +53,3 @@ export default function CreatePostPage() {
   )
 }
 
-{/* <PostForm
-  onCreateSubmit={handleCreateSubmit}
-  onEditSubmit={handleEditSubmit}   [id]/page.tsx
-/> */}
