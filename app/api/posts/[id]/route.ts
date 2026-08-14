@@ -65,3 +65,24 @@ export const GET = async (
         return NextResponse.json({ message: error.message }, { status: 400 })
     }
   }
+
+  // DELETE
+  export const DELETE = async (
+    request: NextRequest,
+    { params }: { params: Promise<{ id: string }>},
+  ) => {
+    const { id } = await params
+
+    try {
+      await prisma.post.delete({
+        where: {
+          id: parseInt(id)
+        }
+      })
+
+      return NextResponse.json({ message: '削除成功'}, { status: 200 })
+    } catch(error) {
+      if(error instanceof Error)
+        return NextResponse.json({ message: error.message }, { status: 400 })
+    }
+  }

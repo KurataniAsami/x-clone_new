@@ -15,21 +15,39 @@ import {
   DialogContent,
   DialogHeader,
 } from "@/components/ui/dialog"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { Button } from "@/components/ui/button"
 
 type DropDOwnMenuProps = {
   onEditSubmit: (data: PostFormData) => Promise<void>
   isEditOpen: boolean
   setIsEditOpen: React.Dispatch<React.SetStateAction<boolean>>
+  isDeleteOpen: boolean
+  setIsDeleteOpen: React.Dispatch<React.SetStateAction<boolean>>
   content: string
   setContent: Dispatch<SetStateAction<string>>
+  onDelete: () => void
 }
 
 export default function PostDropDownMenu({
   onEditSubmit,
   isEditOpen,
   setIsEditOpen,
+  isDeleteOpen,
+  setIsDeleteOpen,
   content,
-  setContent
+  setContent,
+  onDelete
   }:DropDOwnMenuProps){
 
   return (
@@ -49,14 +67,19 @@ export default function PostDropDownMenu({
             >
               Edit
             </DropdownMenuItem>
-            <DropdownMenuItem className="text-red-500">
+            <DropdownMenuItem
+              onClick={() => {
+                setIsDeleteOpen(true)
+              }}
+              className="text-red-500"
+            >
               Delete
             </DropdownMenuItem>
           </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {/* modal */}
+      {/* modal(edit) */}
       <Dialog
         open={isEditOpen}
         onOpenChange={setIsEditOpen}
@@ -73,6 +96,29 @@ export default function PostDropDownMenu({
           </DialogHeader>
         </DialogContent>
       </Dialog>
+
+      {/* modal(delete) */}
+      <AlertDialog
+        open={isDeleteOpen}
+        onOpenChange={setIsDeleteOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>ポストを削除しますか？</AlertDialogTitle>
+            <AlertDialogDescription>
+              削除したポストは元に戻せません。
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>キャンセル</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={onDelete}
+            >
+              削除
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

@@ -24,6 +24,7 @@ export default function PostDetailPage() {
 
   // モーダル
   const [isEditOpen, setIsEditOpen] = useState(false)
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false)
 
   const [loading, setLoading] = useState(true); 
   const [error, setError] = useState<string | null>(null);
@@ -91,6 +92,19 @@ export default function PostDetailPage() {
     }
   }
 
+  // DELETE
+  const handleDelete = async () => {
+    try {
+      const res = await fetch(`/api/posts/${id}`,{
+        method: 'DELETE'
+      })
+
+      router.push('/')
+    } catch(error) {
+      setError(error instanceof Error ? error.message: 'ポストを削除できませんでした')
+    }
+  }
+
   if(loading) return <p>Loading...</p>
   if(!post) return <p>イベントがありません</p>
   if(error) return <p>エラーが発生しました</p>
@@ -109,49 +123,47 @@ export default function PostDetailPage() {
       </Link>
 
       <div className="flex gap-2 mt-3 border-b border-b-gray-700 pb-3">
-  <div className="h-8 w-8 inline-flex rounded-full bg-white p-1">
-    <PersonIcon className="h-5 w-5 text-black" />
-  </div>
+        <div className="h-8 w-8 inline-flex rounded-full bg-white p-1">
+          <PersonIcon className="h-5 w-5 text-black" />
+        </div>
 
-  <div className="flex-1">
-    <div className="flex justify-between items-start">
-      <div>
-        <span>{post.user?.name}</span>
-        <span className="ml-2 text-gray-400">
-          {post.user?.AccountName}
-        </span>
+        <div className="flex-1">
+          <div className="flex justify-between items-start">
+            <div>
+              <span>{post.user?.name}</span>
+              <span className="ml-2 text-gray-400">
+                {post.user?.AccountName}
+              </span>
+            </div>
+
+            <PostDropDownMenu
+              onEditSubmit={handleEditSubmit}
+              isEditOpen={isEditOpen}
+              setIsEditOpen={setIsEditOpen}
+              isDeleteOpen={isDeleteOpen}
+              setIsDeleteOpen={setIsDeleteOpen}
+              content={content}
+              setContent={setContent}
+              onDelete={handleDelete}
+            />
+          </div>
+
+          <div className="mt-1">
+            {post.content}
+          </div>
+
+          <p className="mt-2">
+            {new Date(post.createdAt).toLocaleString("en-US", {
+              hour: "numeric",
+              minute: "2-digit",
+              hour12: true,
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            })}
+          </p>
+        </div>
       </div>
-
-      <PostDropDownMenu
-        onEditSubmit={handleEditSubmit}
-        isEditOpen={isEditOpen}
-        setIsEditOpen={setIsEditOpen}
-        content={content}
-        setContent={setContent}
-      />
-    </div>
-
-    <div className="mt-1">
-      {post.content}
-    </div>
-
-    <p className="mt-2">
-      {new Date(post.createdAt).toLocaleString("en-US", {
-        hour: "numeric",
-        minute: "2-digit",
-        hour12: true,
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      })}
-    </p>
-  </div>
-</div>
     </div>
   )
 }
-
-// {/* <PostForm
-//   onCreateSubmit={handleCreateSubmit}
-//   onEditSubmit={handleEditSubmit}   [id]/page.tsx
-// /> */}
