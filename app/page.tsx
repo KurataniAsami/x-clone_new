@@ -2,17 +2,15 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import { useParams } from "next/navigation"
+
 import { Post } from "@/types/post"
+
 import PersonIcon from '@mui/icons-material/Person';
 
 export default function Home() {
-  const { id } = useParams<{ id: string }>()
-
   const [posts, setPosts] = useState<Post[]>([])
 
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const getAllPosts = async () => {
