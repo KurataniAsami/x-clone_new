@@ -3,6 +3,7 @@ import { ChangeEvent, Dispatch, SetStateAction } from "react"
 export type PostFormData = {
   content: string
   ImageKey?: string 
+  ImageUrl?: string 
 }
 
 type PostFormProps = {
@@ -13,7 +14,8 @@ type PostFormProps = {
   disabled?: boolean 
   ImageKey: string | null
   setImageKey: Dispatch<SetStateAction<string | null>>   
-  ImageUrl: string
+  ImageUrl: string | null
+  setImageUrl: Dispatch<SetStateAction<string | null>>
   handleImageUpload: (post: ChangeEvent<HTMLInputElement, Element>) => Promise<void>
 }
 
@@ -37,6 +39,7 @@ export default function PostForm({
     await onCreateSubmit({
       content,
       ImageKey: ImageKey ?? undefined,
+      ImageUrl: ImageUrl ?? undefined,
     })
 }
 

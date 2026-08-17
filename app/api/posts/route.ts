@@ -35,7 +35,8 @@ export const GET = async () => {
 // POST
 export type CreatepostRequestBody = {
   content: string
-  ImageKey?: string
+  ImageKey?: string | null
+  ImageUrl?: string | null
 }
 
 // レスポンス返す型
@@ -75,13 +76,14 @@ export const POST = async (
     // ① フロントからデータが入ったbodyが送られ、それを受け取る
     const body: CreatepostRequestBody = await request.json()
 
-    const { content, ImageKey } = body  // ② bodyから取り出す
+    const { content, ImageKey, ImageUrl } = body  // ② bodyから取り出す
 
     // ③ レコード作成
     const data = await prisma.post.create({
       data: {
         content,   // content: body.contentと同じ意味
-        ImageKey
+        ImageKey,
+        ImageUrl
       }
     })
 

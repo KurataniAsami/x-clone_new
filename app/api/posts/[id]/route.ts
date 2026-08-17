@@ -39,6 +39,7 @@ export const GET = async (
   export type UpdatePostRequestBody = {
     content: string
     ImageKey?: string
+    ImageUrl?: string
   }
 
   export const PUT = async (
@@ -67,7 +68,7 @@ export const GET = async (
 
     const { id } = await params
 
-    const { content, ImageKey }: UpdatePostRequestBody = await request.json()
+    const { content, ImageKey, ImageUrl }: UpdatePostRequestBody = await request.json()
 
     // if (post.userId !== user.id) {
     //   return 403
@@ -80,7 +81,8 @@ export const GET = async (
         },
         data: {
           content,
-          ImageKey
+          ImageKey,
+          ImageUrl
         }
       })
 

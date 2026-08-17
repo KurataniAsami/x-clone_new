@@ -23,7 +23,7 @@ export default function PostDetailPage() {
   const [post, setPost] = useState<PostDetail | null>(null)
   const [content, setContent] = useState('')
   const [ImageKey, setImageKey] = useState<string | null>(null)
-  const [ImageUrl, setImageUrl] = useState('')
+  const [ImageUrl, setImageUrl] = useState<string | null>(null)
 
   // モーダル
   const [isEditOpen, setIsEditOpen] = useState(false)
@@ -98,6 +98,7 @@ export default function PostDetailPage() {
     const body: UpdatePostRequestBody = {
       content: data.content,
       ImageKey: data.ImageKey,
+      ImageUrl: data.ImageUrl,
     }
 
     try {
@@ -117,7 +118,7 @@ export default function PostDetailPage() {
     }
   }
 
-  // 画像の更新
+  // 画像のアップロード
   const handleImageUpload = async (
     event: ChangeEvent<HTMLInputElement>,
     ): Promise<void> => {
@@ -150,6 +151,7 @@ export default function PostDetailPage() {
       .getPublicUrl(data.path)
 
       setImageUrl(publicUrl)
+      
   }
 
   // DELETE
@@ -223,6 +225,7 @@ export default function PostDetailPage() {
               ImageKey={ImageKey}
               setImageKey={setImageKey}
               ImageUrl={ImageUrl}
+              setImageUrl={setImageUrl}
               handleImageUpload={handleImageUpload}
               session={session}
               onEdit={handleEdit}
@@ -234,13 +237,14 @@ export default function PostDetailPage() {
             {post.content}
           </div>
 
-          {ImageUrl && (
+          {post.ImageUrl && (
             <div className="mt-2">
-              <Image
-                src={ImageUrl}
+              <img
+                src={post.ImageUrl}
                 alt="thumbnail"
-                width={400}
+                width={300}
                 height={400}
+                className="rounded-xl"
               />
             </div>
           )}

@@ -37,7 +37,8 @@ type DropDOwnMenuProps = {
   setContent: Dispatch<SetStateAction<string>>
   ImageKey: string | null
   setImageKey: Dispatch<SetStateAction<string | null>> 
-  ImageUrl: string
+  ImageUrl: string | null
+  setImageUrl: Dispatch<SetStateAction<string | null>> 
   handleImageUpload: (post: ChangeEvent<HTMLInputElement, Element>) => Promise<void>
   onDelete: () => void
   session: Session | null | undefined
@@ -55,6 +56,7 @@ export default function PostDropDownMenu({
   ImageKey,
   setImageKey,
   ImageUrl,
+  setImageUrl,
   handleImageUpload,
   setContent,
   onDelete,
@@ -104,6 +106,7 @@ export default function PostDropDownMenu({
               ImageKey={ImageKey}
               setImageKey={setImageKey}
               ImageUrl={ImageUrl}
+              setImageUrl={setImageUrl}
               handleImageUpload={handleImageUpload}
             />
           </DialogHeader>

@@ -12,7 +12,7 @@ model Post {
   content     String
   createdAt   DateTime @default(now())
   ImageKey    String?
-
+  ImageUrl  String?
   userId      Int?
   user        User? @relation(fields: [userId], references: [id])
 }

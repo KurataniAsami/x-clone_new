@@ -23,6 +23,7 @@ export type PostDetail = {
   content: string
   createdAt: string
   ImageKey: string | null
+  ImageUrl: string | null
   comments: string | null
 
   user: {

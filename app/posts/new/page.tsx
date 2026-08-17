@@ -15,7 +15,7 @@ export default function CreatePostPage() {
 
   const [content, setContent] = useState('')
   const [ImageKey, setImageKey] = useState<string | null>(null)
-  const [ImageUrl, setImageUrl] = useState('')
+  const [ImageUrl, setImageUrl] = useState<string | null>(null)
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -34,6 +34,7 @@ export default function CreatePostPage() {
     const body: CreatepostRequestBody = {
       content: data.content,
       ImageKey: data.ImageKey,
+      ImageUrl: ImageUrl,
     }
 
     try {
@@ -75,9 +76,9 @@ export default function CreatePostPage() {
       })
 
       if(error) {
-        error instanceof Error
-        return
-      }
+      setError(error.message)
+      return
+    }
 
       const {
         data: { publicUrl },
@@ -99,6 +100,7 @@ export default function CreatePostPage() {
         setContent={setContent}
         ImageKey={ImageKey}
         ImageUrl={ImageUrl}
+        setImageUrl={setImageUrl}
         setImageKey={setImageKey}
         handleImageUpload={handleImageUpload}
         disabled={loading}
