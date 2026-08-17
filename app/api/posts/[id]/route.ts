@@ -1,4 +1,5 @@
 import { prisma } from "@/libs/prisma";
+import { supabase } from "@/libs/supabase";
 import { PostDetail } from "@/types/post";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -44,9 +45,33 @@ export const GET = async (
     request: NextRequest,
     { params }: { params: Promise<{ id: string }>},
   ) => {
+
+    const authorization = request.headers.get('Authorization')
+
+    if (!authorization) {
+      return NextResponse.json(
+        { message: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+
+    const token = authorization.replace('Bearer ', '')
+
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser(token)
+
+    if (error || !user)
+      return NextResponse.json({ message: '認証に失敗しました' }, { status: 401 })
+
     const { id } = await params
 
     const { content, ImageKey }: UpdatePostRequestBody = await request.json()
+
+    // if (post.userId !== user.id) {
+    //   return 403
+    // }
 
     try {
       const post = await prisma.post.update({
@@ -71,14 +96,58 @@ export const GET = async (
     request: NextRequest,
     { params }: { params: Promise<{ id: string }>},
   ) => {
+
     const { id } = await params
 
+    const authorization = request.headers.get('Authorization')
+
+    if (!authorization) {
+      return NextResponse.json(
+        { message: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+
+    const token = authorization.replace('Bearer ', '')
+
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser(token)
+
+    // 認証失敗は401
+    if (error || !user)
+      return NextResponse.json({ message: '認証に失敗しました' }, { status: 401 })
+
+    // 自分の投稿だけ削除するために投稿を取得
     try {
-      await prisma.post.delete({
+    const post = await prisma.post.findUnique({
+      where: {
+        id: parseInt(id),
+      },
+    })
+
+    // 投稿がなければ404
+    if (!post) {
+      return NextResponse.json(
+        { message: '投稿が見つかりません' },
+        { status: 404 }
+      )
+    }
+
+    // if (post.userId !== user.id) {
+    //   return NextResponse.json(
+    //     { message: 'この投稿を削除する権限がありません' },
+    //     { status: 403 }
+    //   )
+    // }
+
+    // その後、削除
+    await prisma.post.delete({
         where: {
           id: parseInt(id)
-        }
-      })
+      }
+    })
 
       return NextResponse.json({ message: '削除成功'}, { status: 200 })
     } catch(error) {

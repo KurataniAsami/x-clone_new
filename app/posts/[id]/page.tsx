@@ -1,15 +1,18 @@
 'use client'
 
-import { useEffect, useState } from "react"
-import Link from "next/link";
+import { ChangeEvent, useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
+import Image from "next/image";
+import { supabase } from "@/libs/supabase";
+import { useSupabaseSession } from "@/app/hooks/useSupabaseSession";
 
 import { PostDetail } from "@/types/post"
 import { UpdatePostRequestBody } from "@/app/api/posts/[id]/route";
-import { PostFormData } from "@/app/components/PostForm";
 
+import { PostFormData } from "@/app/components/PostForm";
 import PostDropDownMenu from "@/app/components/DropDownMenu";
 
+import { v4 as uuidv4 } from 'uuid'
 import PersonIcon from '@mui/icons-material/Person';
 import { Button } from "@/components/ui/button"
 
@@ -20,7 +23,7 @@ export default function PostDetailPage() {
   const [post, setPost] = useState<PostDetail | null>(null)
   const [content, setContent] = useState('')
   const [ImageKey, setImageKey] = useState<string | null>(null)
-
+  const [ImageUrl, setImageUrl] = useState('')
 
   // モーダル
   const [isEditOpen, setIsEditOpen] = useState(false)
@@ -29,13 +32,15 @@ export default function PostDetailPage() {
   const [loading, setLoading] = useState(true); 
   const [error, setError] = useState<string | null>(null);
 
+  const { session, token } = useSupabaseSession()
+
   useEffect(() => {
     const getPostDetail = async () => {
       try {
         const res = await fetch(`/api/posts/${id}`)
         const data = await res.json()
-        console.log(data)
         setPost(data.post)
+        setImageKey(data.post.ImageKey ?? '')
       } catch(error) {
         setError(error instanceof Error ? error.message: 'ポストを取得できませんでした')
       } finally {
@@ -45,6 +50,16 @@ export default function PostDetailPage() {
 
     getPostDetail()
   },[id])
+
+  // 作成ボタンクリックで認証
+  const handlePostCreate = () => {
+    if (!session) {
+      router.push('/sign_in')
+      return
+    }
+
+    router.push(`/posts/new`)
+  }
 
   // PUT
   // フォームに既存データ表示
@@ -67,6 +82,15 @@ export default function PostDetailPage() {
 
 
   // 更新処理
+  const handleEdit = () => {
+    if (!session) {
+      router.push('/sign_in')
+      return
+    }
+
+    setIsEditOpen(true)
+  }
+
   const handleEditSubmit = async (data: PostFormData) => {
   
     setLoading(true)
@@ -81,6 +105,7 @@ export default function PostDetailPage() {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(body)
       })
@@ -92,11 +117,63 @@ export default function PostDetailPage() {
     }
   }
 
+  // 画像の更新
+  const handleImageUpload = async (
+    event: ChangeEvent<HTMLInputElement>,
+    ): Promise<void> => {
+    if (!event.target.files || event.target.files.length === 0) {
+      return
+    }
+
+    const file = event.target.files[0]
+
+    const filePath = `private/${uuidv4()}`
+
+    const { data, error } = await supabase.storage
+      .from('post_image')
+      .upload(filePath, file, {
+        cacheControl: '3600',
+        upsert: false,
+      })
+
+    if (error) {
+      setError(error.message)
+      return
+    }
+
+    setImageKey(data.path)
+
+    const {
+      data: { publicUrl },
+      } = supabase.storage
+      .from('post_image')
+      .getPublicUrl(data.path)
+
+      setImageUrl(publicUrl)
+  }
+
   // DELETE
+  const handleDeleteClick = () => {
+    if(!session) {
+      router.push('/sign_in')
+      return
+    }
+     
+    setIsDeleteOpen(true)
+  }
+
   const handleDelete = async () => {
+    if (!token) {
+      router.push('/sign_in')
+      return
+    }
+
     try {
       const res = await fetch(`/api/posts/${id}`,{
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: {
+        Authorization: `Bearer ${token}`,
+      },
       })
 
       router.push('/')
@@ -111,16 +188,14 @@ export default function PostDetailPage() {
 
   return (
     <div>
-      <Link
-        href={`/posts/new`}
-        className="flex justify-end mr-3"
-      >
+      <div className="flex justify-end mr-3">
         <Button
           className="bg-gray-700 text-black rounded-2xl font-bold mt-3 p-4 hover:bg-gray-700"
+          onClick={handlePostCreate}
         >
           Post
         </Button>
-      </Link>
+      </div>
 
       <div className="flex gap-2 mt-3 border-b border-b-gray-700 pb-3">
         <div className="h-8 w-8 inline-flex rounded-full bg-white p-1">
@@ -145,12 +220,30 @@ export default function PostDetailPage() {
               content={content}
               setContent={setContent}
               onDelete={handleDelete}
+              ImageKey={ImageKey}
+              setImageKey={setImageKey}
+              ImageUrl={ImageUrl}
+              handleImageUpload={handleImageUpload}
+              session={session}
+              onEdit={handleEdit}
+              onDeleteClick={handleDeleteClick}
             />
           </div>
 
           <div className="mt-1">
             {post.content}
           </div>
+
+          {ImageUrl && (
+            <div className="mt-2">
+              <Image
+                src={ImageUrl}
+                alt="thumbnail"
+                width={400}
+                height={400}
+              />
+            </div>
+          )}
 
           <p className="mt-2">
             {new Date(post.createdAt).toLocaleString("en-US", {

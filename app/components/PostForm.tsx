@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from "react"
+import { ChangeEvent, Dispatch, SetStateAction } from "react"
 
 export type PostFormData = {
   content: string
@@ -11,14 +11,22 @@ type PostFormProps = {
   onCreateSubmit: (data: PostFormData) => Promise<void>
   onEditSubmit: (data: PostFormData) => Promise<void>
   disabled?: boolean 
+  ImageKey: string | null
+  setImageKey: Dispatch<SetStateAction<string | null>>   
+  ImageUrl: string
+  handleImageUpload: (post: ChangeEvent<HTMLInputElement, Element>) => Promise<void>
 }
 
 export default function PostForm({
   content,
   setContent,
+  ImageKey,
+  setImageKey,
+  ImageUrl,
+  handleImageUpload,
   onCreateSubmit,
   onEditSubmit,
-  disabled
+  disabled,
 }:PostFormProps) {
 
   const handleSubmit = async (
@@ -28,6 +36,7 @@ export default function PostForm({
 
     await onCreateSubmit({
       content,
+      ImageKey: ImageKey ?? undefined,
     })
 }
 
@@ -42,6 +51,19 @@ export default function PostForm({
             className="focus:outline-none"
             disabled={disabled}
             placeholder="今どうしてる？"
+          />
+        </div>
+
+        <div>
+          <label
+            htmlFor="ImageKey"
+          >
+            画像
+          </label>
+          <input
+            type="file"
+            id="ImageKey"
+            onChange={handleImageUpload}
           />
         </div>
 

@@ -1,5 +1,8 @@
 'use client'
 
+import { ChangeEvent, Dispatch, SetStateAction } from "react";
+import { Session } from '@supabase/supabase-js'
+import PostForm, { PostFormData } from "./PostForm";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,8 +11,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import PostForm, { PostFormData } from "./PostForm";
-import { Dispatch, SetStateAction, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -24,9 +25,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { Button } from "@/components/ui/button"
 
 type DropDOwnMenuProps = {
   onEditSubmit: (data: PostFormData) => Promise<void>
@@ -36,7 +35,14 @@ type DropDOwnMenuProps = {
   setIsDeleteOpen: React.Dispatch<React.SetStateAction<boolean>>
   content: string
   setContent: Dispatch<SetStateAction<string>>
+  ImageKey: string | null
+  setImageKey: Dispatch<SetStateAction<string | null>> 
+  ImageUrl: string
+  handleImageUpload: (post: ChangeEvent<HTMLInputElement, Element>) => Promise<void>
   onDelete: () => void
+  session: Session | null | undefined
+  onEdit: () => void
+  onDeleteClick: () => void
 }
 
 export default function PostDropDownMenu({
@@ -46,8 +52,15 @@ export default function PostDropDownMenu({
   isDeleteOpen,
   setIsDeleteOpen,
   content,
+  ImageKey,
+  setImageKey,
+  ImageUrl,
+  handleImageUpload,
   setContent,
-  onDelete
+  onDelete,
+  session,
+  onEdit,
+  onDeleteClick
   }:DropDOwnMenuProps){
 
   return (
@@ -61,16 +74,12 @@ export default function PostDropDownMenu({
         <DropdownMenuContent>
           <DropdownMenuGroup>
             <DropdownMenuItem
-              onClick={() => {
-                setIsEditOpen(true)
-              }}
+              onClick={onEdit}
             >
               Edit
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={() => {
-                setIsDeleteOpen(true)
-              }}
+              onClick={onDeleteClick}
               className="text-red-500"
             >
               Delete
@@ -92,6 +101,10 @@ export default function PostDropDownMenu({
               onCreateSubmit={onEditSubmit}
               content={content}
               setContent={setContent}
+              ImageKey={ImageKey}
+              setImageKey={setImageKey}
+              ImageUrl={ImageUrl}
+              handleImageUpload={handleImageUpload}
             />
           </DialogHeader>
         </DialogContent>
