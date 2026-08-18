@@ -56,6 +56,7 @@ export const POST = async (
 ) => {
   const authorization = request.headers.get('Authorization')   // Authorizationヘッダーを取得
 
+
   // 認証エラーを返す
   if (!authorization) {
     return NextResponse.json(
@@ -73,7 +74,7 @@ export const POST = async (
   const {
     data: { user },
     error,
-  } = await supabase.auth.getUser(token)  // トークンからユーザー情報を取得
+  } = await supabase.auth.getUser(token)  // トークンからユーザー情報を取得(ログイン中のユーザー)
 
   if (error || !user)
     return NextResponse.json({ status: error?.message }, { status: 400 })
@@ -82,18 +83,15 @@ export const POST = async (
     // ① フロントからデータが入ったbodyが送られ、それを受け取る
     const body: CreatepostRequestBody = await request.json()
 
-    const { content, ImageKey, ImageUrl } = body  // ② bodyから取り出す
-
     // ③ レコード作成
     const data = await prisma.post.create({
       data: {
-        content,   // content: body.contentと同じ意味
-        ImageKey,
-        ImageUrl
+        content: body.content,   // content: body.contentと同じ意味
+        ImageKey: body.ImageKey,
+        ImageUrl: body.ImageUrl,
+        userId: user.id,
       }
     })
-
-    // 中間テーブル作成
 
     return NextResponse.json({
       id: data.id

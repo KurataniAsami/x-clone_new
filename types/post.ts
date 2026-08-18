@@ -32,3 +32,11 @@ export type PostDetail = {
     name: string | null   // 一時的にnull
   }
 }
+
+// ユーザーアカウント
+export type CurrentUser = {
+  id: string
+  email: string
+  accountName: string | null
+  name: string | null
+}

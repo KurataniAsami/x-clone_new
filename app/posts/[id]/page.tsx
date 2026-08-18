@@ -14,6 +14,7 @@ import PostDropDownMenu from "@/app/components/DropDownMenu";
 import { v4 as uuidv4 } from 'uuid'
 import PersonIcon from '@mui/icons-material/Person';
 import { Button } from "@/components/ui/button"
+import { useCurrentUser } from "@/app/hooks/useCurrentUser";
 
 export default function PostDetailPage() {
   const router = useRouter()
@@ -32,6 +33,8 @@ export default function PostDetailPage() {
   const [error, setError] = useState<string | null>(null);
 
   const { session, token } = useSupabaseSession()
+
+  const currentUser = useCurrentUser()
 
   useEffect(() => {
     const getPostDetail = async () => {
@@ -205,11 +208,11 @@ export default function PostDetailPage() {
 
         <div className="flex-1">
           <div className="flex justify-between items-start">
-            <div>
-              <span>{post.user?.name}</span>
-              <span className="ml-2 text-gray-400">
-                {post.user?.AccountName}
-              </span>
+            <div className="flex gap-2">
+              <p>{post.user?.name}</p>
+                <p className="text-gray-400">
+                {post.user?.accountName}
+              </p>
             </div>
 
             <PostDropDownMenu
