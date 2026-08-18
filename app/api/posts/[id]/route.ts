@@ -30,6 +30,7 @@ export const GET = async (
 
     return NextResponse.json({ post }, { status: 200 })
   } catch(error) {
+    console.error('GET /api/posts/[id] error:', error)
       if(error instanceof Error)
         return NextResponse.json({ message: error.message }, { status: 400 })
     }
@@ -47,6 +48,10 @@ export const GET = async (
     { params }: { params: Promise<{ id: string }>},
   ) => {
 
+    // ① URLのidを取得
+    const { id } = await params
+
+    // ② Authorizationを確認
     const authorization = request.headers.get('Authorization')
 
     if (!authorization) {
@@ -56,24 +61,51 @@ export const GET = async (
       )
     }
 
+    // ③ トークンを取得
     const token = authorization.replace('Bearer ', '')
 
+    // ④ Supabaseで認証
     const {
       data: { user },
       error,
     } = await supabase.auth.getUser(token)
 
-    if (error || !user)
-      return NextResponse.json({ message: '認証に失敗しました' }, { status: 401 })
+    if (error || !user) {
+      return NextResponse.json(
+        { message: '認証に失敗しました' },
+        { status: 401 }
+      )
+    }
 
-    const { id } = await params
+    // ⑤ 更新前に投稿を取得
+    const existingPost = await prisma.post.findUnique({
+      where: {
+        id: parseInt(id),
+      },
+    })
 
-    const { content, ImageKey, ImageUrl }: UpdatePostRequestBody = await request.json()
+    if (!existingPost) {
+      return NextResponse.json(
+        { message: '投稿が見つかりません' },
+        { status: 404 }
+      )
+    }
 
-    // if (post.userId !== user.id) {
-    //   return 403
-    // }
+    // ⑥ 自分の投稿か確認
+    if (existingPost.userId !== user.id) {
+      return NextResponse.json(
+        { message: '権限がありません' },
+        { status: 403 }
+      )
+    }
 
+    const {
+      content,
+      ImageKey,
+      ImageUrl
+    }: UpdatePostRequestBody = await request.json()
+
+    // ⑦ 更新
     try {
       const post = await prisma.post.update({
         where: {

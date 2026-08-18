@@ -8,18 +8,20 @@ datasource db {
 
 // 1つのPostに対して投稿者は1人だけ
 model Post {
-  id          Int @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   content     String
-  createdAt   DateTime @default(now())
+  createdAt   DateTime  @default(now())
   ImageKey    String?
-  ImageUrl  String?
-  userId      Int?
-  user        User? @relation(fields: [userId], references: [id])
+  ImageUrl    String?
+
+  userId      String?
+  user        User?  @relation(fields: [userId], references: [id])
 }
 
 model User {
-  id            Int @id @default(autoincrement())
-  AccountName   String? @unique
+  id            String    @id   // supabaseが重複しないidを発行してくれるためautoincrementはいらない
+  email         String?   @unique
+  accountName   String?   
   name          String?
 
   posts         Post[]

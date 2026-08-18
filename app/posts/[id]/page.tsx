@@ -2,7 +2,6 @@
 
 import { ChangeEvent, useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
-import Image from "next/image";
 import { supabase } from "@/libs/supabase";
 import { useSupabaseSession } from "@/app/hooks/useSupabaseSession";
 
@@ -54,7 +53,7 @@ export default function PostDetailPage() {
   // 作成ボタンクリックで認証
   const handlePostCreate = () => {
     if (!session) {
-      router.push('/sign_in')
+      router.push('/login')
       return
     }
 
@@ -84,7 +83,7 @@ export default function PostDetailPage() {
   // 更新処理
   const handleEdit = () => {
     if (!session) {
-      router.push('/sign_in')
+      router.push('/login')
       return
     }
 
@@ -157,7 +156,7 @@ export default function PostDetailPage() {
   // DELETE
   const handleDeleteClick = () => {
     if(!session) {
-      router.push('/sign_in')
+      router.push('/login')
       return
     }
      
@@ -166,7 +165,7 @@ export default function PostDetailPage() {
 
   const handleDelete = async () => {
     if (!token) {
-      router.push('/sign_in')
+      router.push('/login')
       return
     }
 

@@ -6,11 +6,49 @@ import Link from "next/link"
 import { Post } from "@/types/post"
 
 import PersonIcon from '@mui/icons-material/Person';
+import { useSupabaseSession } from "./hooks/useSupabaseSession";
+
+type CurrentUser = {
+  id: string
+  email: string
+  accountName: string | null
+  name: string | null
+}
 
 export default function Home() {
   const [posts, setPosts] = useState<Post[]>([])
+  const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null)
 
   const [loading, setLoading] = useState(true)
+
+  const { session } = useSupabaseSession()
+
+  useEffect(() => {
+  const getUser = async () => {
+    // session または user.id が存在しない場合は処理しない
+    if (!session?.user?.id) return
+
+    try {
+      const res = await fetch(`/api/users/${session.user.id}`)
+
+      if (!res.ok) {
+        console.log('ユーザー取得失敗:', res.status)
+        return
+      }
+
+      const data = await res.json()
+      console.log('GET APIから取得したデータ:', data) // ★ここで accountName が入っているか確認
+
+      // APIが { user: { ... } } を返す場合:
+      setCurrentUser(data.user ?? data) 
+      // ※ APIが直接 { id, accountName, ... } を返している場合は data を直接セット
+    } catch (error) {
+      console.error('Fetchエラー:', error)
+    }
+  }
+
+  getUser()
+}, [session?.user?.id]) // session.user.id の変化をトリガーにする
 
   useEffect(() => {
     const getAllPosts = async () => {
@@ -28,6 +66,12 @@ export default function Home() {
   
   return (
     <div>
+      <div>
+        {currentUser && (
+          <p>{currentUser.accountName}</p>
+        )}
+      </div>
+
       <ul>
         {posts.map((post) => {
           return (

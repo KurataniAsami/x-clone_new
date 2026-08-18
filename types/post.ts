@@ -8,7 +8,7 @@ export type Post = {
 
   user: {
     id: number
-    AccountName: string | null   // 一時的にnull
+    accountName: string
     name: string | null  // 一時的にnull
   }
 }
@@ -28,7 +28,7 @@ export type PostDetail = {
 
   user: {
     id: number
-    AccountName: string | null   // 一時的にnull
+    accountName: string | null   // 一時的にnull
     name: string | null   // 一時的にnull
   }
 }

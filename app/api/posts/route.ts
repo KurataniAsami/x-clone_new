@@ -6,6 +6,12 @@ export type PostIndexResponse = {
   content: string
   ImageKey?: string
   createdAt: Date
+
+  user: {
+    id: string
+    accountName: string
+    name: string | null
+  } | null
 }
 
 export const GET = async () => {
@@ -15,7 +21,7 @@ export const GET = async () => {
         user: {
           select: {
             id: true,
-            AccountName: true,
+            accountName: true,
             name: true
           }
         }
