@@ -40,3 +40,17 @@ export type CurrentUser = {
   accountName: string | null
   name: string | null
 }
+
+// コメント機能
+export interface Comment {
+  id: number;
+  content: string;
+  createdAt: string;
+  postId: number;
+
+  author: {
+    id: string
+    accountName: string
+    name: string
+  }
+}
