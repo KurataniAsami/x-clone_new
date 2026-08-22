@@ -40,7 +40,7 @@ export async function POST(request: Request) {
   try {
     const { postId, userId, content } = await request.json();
 
-    // ?.trim()にすることで空白を通さない
+    // trim()にすることで空白を通さない
     if (!postId || !userId || !content?.trim()) {
       return NextResponse.json(
         { error: "必須項目が不足しています" },

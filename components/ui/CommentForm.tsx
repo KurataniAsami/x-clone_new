@@ -6,7 +6,7 @@ import { Comment } from "@/types/post";
 
 type CommentFormProps = {
   postId: number;
-  userId: number;
+  userId: string;
   onCommentAdded: (comment: Comment) => void;
 }
 
@@ -57,30 +57,28 @@ export default function CommentForm({
         </div>
       )}
 
-      <div>
-        <label
-          htmlFor="content"
-          className="block text-sm font-medium text-gray-700"
-        >
-          コメント
-        </label>
+      <div className="border-b border-b-gray-700">
         <textarea
           id="content"
           value={content}
           onChange={(e) => setContent(e.target.value)}
           required
-          rows={4}   // テキストエリアが何行分表示するか
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+          // rows={4}   // テキストエリアが何行分表示するか
+          className="mt-1 pt-2 pl-2 block w-full shadow-sm"
+          placeholder="Post your reply"
         ></textarea>
-      </div>
 
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white !bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
-      >
-        {isSubmitting ? "コメント送信中..." : "コメントする"}
-      </button>
+        <div className="flex justify-end mr-3 mb-3">
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="inline-flex items-center px-6 py-2 border border-transparent
+              text-sm font-bold rounded-2xl shadow-sm text-black bg-gray-700 disabled:opacity-50"
+          >
+            {isSubmitting ? "Posting comment..." : "reply"}
+          </button>
+        </div>
+      </div>
     </form>
   );
 }

@@ -8,7 +8,7 @@ import CommentForm from "@/components/ui/CommentForm";
 
 type CommentSectionProps = {
   postId: number;
-  userId: number;
+  userId: string;
   initialComments: Comment[];
   content: string
   setContent: Dispatch<SetStateAction<string>>
@@ -18,8 +18,6 @@ export default function CommentSection({
   postId,
   userId,
   initialComments,
-  content,
-  setContent
 }: CommentSectionProps) {
 
   const [comments, setComments] = useState<Comment[]>(initialComments);
@@ -30,12 +28,12 @@ export default function CommentSection({
 
   return (
     <>
-      <CommentList comments={comments} />
       <CommentForm
         postId={postId}
         onCommentAdded={handleCommentAdded}
         userId={userId}  
       />
+      <CommentList comments={comments} />
     </>
   );
 }
