@@ -18,6 +18,7 @@ model Post {
   user        User?  @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   comments    Comment[]
+  likes         Like[]
 }
 
 model User {
@@ -28,6 +29,7 @@ model User {
 
   posts         Post[]
   comments      Comment[]
+  likes         Like[]
 }
 
 model Comment {
@@ -40,6 +42,18 @@ model Comment {
 
   userId    String
   user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Like {
+  id        Int      @id @default(autoincrement())
+  postId    Int
+  userId    String
+  createdAt DateTime @default(now())
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, userId])  // 同じユーザーが同じ投稿に何回もいいねすることを防ぐ
 }
 
 
