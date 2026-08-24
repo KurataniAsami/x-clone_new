@@ -45,14 +45,16 @@ model Comment {
 }
 
 model Like {
-  id        Int      @id @default(autoincrement())
-  postId    Int
-  userId    String
-  createdAt DateTime @default(now())
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
 
-  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  postId      Int
+  post        Post @relation(fields: [postId], references: [id], onDelete: Cascade)
 
+  userId      String
+  user User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // この複合ユニークキーに対して、 postId_userIdを生成する
   @@unique([postId, userId])  // 同じユーザーが同じ投稿に何回もいいねすることを防ぐ
 }
 

@@ -6,26 +6,34 @@ import Link from "next/link"
 import { Post } from "@/types/post"
 
 import PersonIcon from '@mui/icons-material/Person';
-import { useCurrentUser } from "./hooks/useCurrentUser";
-import LikeButton from "./components/LikeButton";
+import LikeButton from "../components/LikeButton";
+import { useCurrentUser } from "../hooks/useCurrentUser";
 
-export default function Home() {
+
+export default function LikesListPage() {
   const [posts, setPosts] = useState<Post[]>([])
   const [loading, setLoading] = useState(true)
 
-  //  ログインユーザーの取得はhokksに格納
   const currentUser = useCurrentUser()
 
   useEffect(() => {
-    const getAllPosts = async () => {
-      const res = await fetch(`/api/posts`)
-      const data = await res.json()
-      setPosts(data.posts)
-      setLoading(false)
-    }
+    if (!currentUser) return;
 
-    getAllPosts()
-  },[])
+    const getLikedPosts = async () => {
+      const res = await fetch(
+        `/api/likes?userId=${currentUser.id}`
+      );
+
+      const data = await res.json();
+
+      const posts = data.likes.map((like: any) => like.post);
+
+      setPosts(posts);
+      setLoading(false);
+    };
+
+    getLikedPosts();
+  }, [currentUser]);
 
   if(loading) return <p>Loading...</p>
   if (!posts) return <p>ポストがありません</p>
@@ -55,7 +63,6 @@ export default function Home() {
                     </div>
                   </Link>
 
-                  {/* APIからuserを取得しているからcurrentUserになる */}
                   {currentUser && (
                     <LikeButton
                       postId={post.id}

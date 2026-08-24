@@ -1,4 +1,5 @@
 import { ChangeEvent, Dispatch, SetStateAction } from "react"
+import ImageIcon from '@mui/icons-material/Image';
 
 export type PostFormData = {
   content: string
@@ -23,11 +24,9 @@ export default function PostForm({
   content,
   setContent,
   ImageKey,
-  setImageKey,
   ImageUrl,
   handleImageUpload,
   onCreateSubmit,
-  onEditSubmit,
   disabled,
 }:PostFormProps) {
 
@@ -44,7 +43,7 @@ export default function PostForm({
 }
 
   return (
-    <div className="border-y border-y-gray-500 mt-5 py-3">
+    <div className=" mt-5 py-3">
       <form onSubmit={handleSubmit}>
         <div>
           <input
@@ -57,23 +56,20 @@ export default function PostForm({
           />
         </div>
 
-        <div>
-          <label
-            htmlFor="ImageKey"
-          >
-            画像
+        <div className="flex justify-between items-center border-t border-t-gray-500 mt-2 pt-4">
+          <label htmlFor="ImageKey">
+            <ImageIcon/>
           </label>
           <input
             type="file"
             id="ImageKey"
             onChange={handleImageUpload}
+            className="sr-only"
           />
-        </div>
 
-        <div className="flex justify-end mr-3">
           <button
             type="submit"
-            className="bg-gray-700 text-black rounded-3xl font-bold mt-3 px-4 py-2"
+            className="bg-gray-700 text-black rounded-3xl font-bold px-3 py-1 mt-3"
           >
             POST
           </button>

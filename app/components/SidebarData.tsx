@@ -1,7 +1,7 @@
 import HomeIcon from '@mui/icons-material/Home';
 import SearchIcon from '@mui/icons-material/Search';
 import PersonIcon from '@mui/icons-material/Person';
-import BookmarkIcon from '@mui/icons-material/Bookmark';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 
 export const SidebarData = [
   {
@@ -20,8 +20,8 @@ export const SidebarData = [
     link: ""
   },
   {
-    title: "Bookmarks",
-    icon: <BookmarkIcon />,
-    link: ""
+    title: "favorite",
+    icon: <FavoriteIcon />,
+    link: "/likes"
   },
 ]

@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation"
 import { supabase } from "@/libs/supabase";
 import { useSupabaseSession } from "@/app/hooks/useSupabaseSession";
 
-import { PostDetail } from "@/types/post"
+import { Post, PostDetail, Comment } from "@/types/post"
 import { UpdatePostRequestBody } from "@/app/api/posts/[id]/route";
 
 import { PostFormData } from "@/app/components/PostForm";
@@ -15,8 +15,13 @@ import { v4 as uuidv4 } from 'uuid'
 import PersonIcon from '@mui/icons-material/Person';
 import { Button } from "@/components/ui/button"
 import { useCurrentUser } from "@/app/hooks/useCurrentUser";
+import CommentSection from "@/app/components/CommentSection";
 
-export default function PostDetailPage() {
+export default function PostDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
   const router = useRouter()
   const { id } = useParams<{ id: string}>()
 
@@ -24,6 +29,7 @@ export default function PostDetailPage() {
   const [content, setContent] = useState('')
   const [ImageKey, setImageKey] = useState<string | null>(null)
   const [ImageUrl, setImageUrl] = useState<string | null>(null)
+  const [comments, setComments] = useState<Comment[]>([])
 
   // モーダル
   const [isEditOpen, setIsEditOpen] = useState(false)
@@ -186,9 +192,40 @@ export default function PostDetailPage() {
     }
   }
 
+  // コメント機能
+  const siteUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+
+useEffect(() => {
+  const fetchComments = async () => {
+    const res = await fetch(`/api/comments?postId=${id}`)
+    const data = await res.json()
+
+    setComments(data.comments)
+  }
+
+  fetchComments()
+}, [id])
+
+async function getComments(postId: string): Promise<Comment[]> {
+  const res = await fetch(`${siteUrl}/api/comments?postId=${postId}`, {
+    cache: "no-store",
+  });
+  if (!res.ok) {
+    console.error(`Failed to fetch comments for postId ${postId}`);
+    throw new Error("Failed to fetch comments");
+  }
+  const data = await res.json();
+  return data.comments;
+}
+
   if(loading) return <p>Loading...</p>
-  if(!post) return <p>イベントがありません</p>
+  if(!post) return <p>ポストがありません</p>
   if(error) return <p>エラーが発生しました</p>
+
+  // ユーザー取得前は表示しない
+  if (!currentUser) {
+    return <p>Loading...</p>
+  }
 
   return (
     <div>
@@ -262,6 +299,16 @@ export default function PostDetailPage() {
             })}
           </p>
         </div>
+      </div>
+
+      <div className="max-w-2xl mx-auto">
+        <CommentSection
+          postId={post.id}
+          initialComments={comments}
+          userId={currentUser.id}
+          content={content}
+          setContent={setContent}
+        />
       </div>
     </div>
   )

@@ -42,13 +42,13 @@ export type CurrentUser = {
 }
 
 // コメント機能
-export interface Comment {
+export type Comment = {
   id: number;
   content: string;
   createdAt: string;
   postId: number;
 
-  author: {
+  user: {
     id: string
     accountName: string
     name: string
